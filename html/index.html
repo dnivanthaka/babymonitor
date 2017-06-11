@@ -9,6 +9,7 @@
 body{
 	padding: 0;
 	margin: 0;
+	background-color: #20B2AA;
 }
 #bodyContainer{
 	width: 380px;
@@ -50,9 +51,27 @@ body{
 		var entry = document.createElement("li");
 		entry.appendChild(document.createTextNode("This is a test"));
 		list.insertBefore(entry, list.firstChild);
-
+		updateMotionStatus();
 		//setTimeout(function(){soundAlarm()}, 5000);
+		setInterval(function(){updateMotionStatus()}, 5000);
 	}
+function updateMotionStatus(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var mList = this.responseText.split("\n");
+	    var list = document.getElementById("list");
+	    list.innerHTML = '';
+	    for(var i=0;i<(mList.length - 1);i++){
+            	var entry = document.createElement("li");
+            	entry.appendChild(document.createTextNode(mList[i]));
+            	list.insertBefore(entry, list.firstChild);
+	    }
+       }
+    };
+    xhttp.open("GET", "cgi-bin/getmotion.sh", true);
+    xhttp.send();
+}
 
 function refreshStream(){
 	var img = document.getElementById("outStream");
@@ -82,7 +101,7 @@ function soundAlarm(){
 		<h3>Event Log</h3>
 		<div>
 			<ul id="list">
-				<li>No events</li>
+				<li>No Events</li>
 			</ul>
 		</div>
 	</div>
