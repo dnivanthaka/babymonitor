@@ -33,7 +33,7 @@ function updateMotionStatus(){
             	list.insertBefore(entry, list.firstChild);
 	        }
 	        
-	        var eve = new Date(mList[mList.length - 1].replace('_', 'T'));
+	        var eve = new Date((mList[mList.length - 1].replace('_', 'T'))+'Z');
 	        
 	        if(latestEvent == null || latestEvent < eve){
 	            alert('Latest Event');
