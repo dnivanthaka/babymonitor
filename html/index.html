@@ -48,6 +48,16 @@ function updateTemperature(){
     xhttp.send();
 }
 
+function captureFrame(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+        }
+    };
+    xhttp.open("GET", "cgi-bin/capture.sh", true);
+    xhttp.send();
+}
+
 function refreshStream(){
 	var img = document.getElementById("outStream");
 	var url = img.src;
@@ -70,7 +80,7 @@ function soundAlarm(){
 	<div id="streamControl">
 		<button type="button" class="btn btn-std" onclick="refreshStream()" id="streamRefresh">Refresh Video</button>
 		<button type="button" class="btn btn-std" onclick="window.location.reload()">Refresh Page</button>	
-		<button type="button" class="btn btn-std" onclick="refreshStream()" id="streamRefresh">Capture Frame</button><br/>
+		<button type="button" class="btn btn-std" onclick="captureFrame()" id="streamRefresh">Capture Frame</button><br/>
 		<a href="control.html"><button type="button" class="btn btn-cmd">Device Control</button></a>
 	</div>
 	<div id="temperatureBox">
