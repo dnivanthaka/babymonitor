@@ -4,72 +4,47 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The best baby monitor</title>
-<style type="text/css">
-body{
-	padding: 0;
-	margin: 0;
-	background-color: #20B2AA;
-}
-#bodyContainer{
-	width: 380px;
-	margin: 0 auto;
-	/*border: 1px solid #000;*/
-}
-
-#streamContainer img{
-	/*padding: 2px;*/
-	display: block;
-	margin: 0 auto;
-	border: 2px solid red;
-}
-
-#streamContainer{
-	width: 100%;
-	margin: 0 auto;
-	/*border: 1px solid #000;*/
-}
-
-#streamControl{
-	width: 80%;
-	margin:0 auto;
-}
-
-#eventStream{
-	padding: 2px;
-}
-</style>
+<title>Secure Monitor</title>
+<link href="styles.css" rel="stylesheet"/>
 <script type="text/javascript">
 	window.onload = function(){
 		var url = window.location.href;
 		var host = url.substring(0, url.lastIndexOf("/"));
-		//alert("It works!!!");
 		var img = document.getElementById("outStream");
 		img.src = host+":9090/stream/video.mjpeg";
-		//alert(host);
-		var list = document.getElementById("list");
-		var entry = document.createElement("li");
-		entry.appendChild(document.createTextNode("This is a test"));
-		list.insertBefore(entry, list.firstChild);
+		
 		updateMotionStatus();
 		//setTimeout(function(){soundAlarm()}, 5000);
-		setInterval(function(){updateMotionStatus()}, 5000);
+		setInterval(function(){updateMotionStatus();updateTemperature()}, 5000);
 	}
 function updateMotionStatus(){
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var mList = this.responseText.split("\n");
-	    var list = document.getElementById("list");
-	    list.innerHTML = '';
-	    for(var i=0;i<(mList.length - 1);i++){
+	        var list = document.getElementById("list");
+	        list.innerHTML = '';
+	        for(var i=0;i<(mList.length - 1);i++){
             	var entry = document.createElement("li");
-            	entry.appendChild(document.createTextNode(mList[i]));
+            	entry.appendChild(document.createTextNode(mList[i].replace('_', ' ')));
             	list.insertBefore(entry, list.firstChild);
-	    }
+	        }
        }
     };
     xhttp.open("GET", "cgi-bin/getmotion.sh", true);
+    xhttp.send();
+}
+
+function updateTemperature(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var temp1 = this.responseText;
+            var temp1_out = document.getElementById("temp1");
+            temp1_out.innerHTML = temp1;
+       }
+    };
+    xhttp.open("GET", "cgi-bin/gettemp.sh", true);
     xhttp.send();
 }
 
@@ -90,15 +65,19 @@ function soundAlarm(){
 <body>
 <div id="bodyContainer">
 	<div id="streamContainer">
-		<img id="outStream" src=""/>
+		<img id="outStream" src="no_stream.jpg"/>
 	</div>
 	<div id="streamControl">
-		<button type="button" onclick="refreshStream()" id="streamRefresh">Refresh Video</button>
-		<button type="button" onclick="window.location.reload()">Refresh Page</button>
-		<a href="control.html"><button type="button">Device Control</button></a>
+		<button type="button" class="btn btn-std" onclick="refreshStream()" id="streamRefresh">Refresh Video</button>
+		<button type="button" class="btn btn-std" onclick="window.location.reload()">Refresh Page</button>	
+		<button type="button" class="btn btn-std" onclick="refreshStream()" id="streamRefresh">Capture Frame</button><br/>
+		<a href="control.html"><button type="button" class="btn btn-cmd">Device Control</button></a>
+	</div>
+	<div id="temperatureBox">
+	    <p>Ambient Temperature (&deg;C): <span id="temp1"></span></p>
 	</div>
 	<div id="eventStream">
-		<h3>Event Log</h3>
+		<h3>Event Log (Latest 5)</h3>
 		<div>
 			<ul id="list">
 				<li>No Events</li>

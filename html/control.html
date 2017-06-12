@@ -4,82 +4,69 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The best baby monitor</title>
-<style type="text/css">
-body{
-	padding: 0;
-	margin: 0;
-	background-color: #20B2AA;
-}
-#bodyContainer{
-	width: 380px;
-	margin: 0 auto;
-	/*border: 1px solid #000;*/
-}
-
-#streamContainer img{
-	/*padding: 2px;*/
-	display: block;
-	margin: 0 auto;
-	border: 2px solid red;
-}
-
-#streamContainer{
-	width: 100%;
-	margin: 0 auto;
-	/*border: 1px solid #000;*/
-}
-
-#mainControl{
-	width: 80%;
-	margin:0 auto;
-}
-
-#eventStream{
-	padding: 2px;
-}
-</style>
+<title>Secure Monitor</title>
+<link href="styles.css" rel="stylesheet"/>
 <script type="text/javascript">
+    //https://www.raspberrypi.org/documentation/usage/camera/raspicam/raspistill.md
+    //https://cdn-learn.adafruit.com/downloads/pdf/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing.pdf
+    
 	window.onload = function(){
 		//alert("It works!!!");
 	}
 
 function sendCommand(cmd){
 
-var url = "cgi-bin/control.cgi?state=";
+    var url = "cgi-bin/control.cgi?state=";
 
-if(cmd == 'shutdown' || cmd == 'reboot'){
-	if(!confirm('Are you sure you want to '+cmd+'?')){
-		return;
-	}
+    if(cmd == 'shutdown' || cmd == 'reboot'){
+	    if(!confirm('Are you sure you want to '+cmd+'?')){
+		    return;
+	    }
+    }
+
+    if(cmd == 'restart_service'){
+	    url += "1";
+    }else if(cmd == 'reboot'){
+	    url += "2";
+    }else if(cmd == 'shutdown'){
+	    url += "3";
+    }
+
+    var req = new XMLHttpRequest();
+    req.open("GET", url, true);
+    req.send(null);
+
+
+    if(cmd == 'restart_service'){
+	    document.getElementById('mainControl').style = 'display:none';
+	    document.getElementById('serviceWaitMessage').style = 'display:block';
+	    setTimeout(function(){window.location='index.html'}, 6000);	
+    }else if(cmd == 'reboot'){
+	    document.getElementById('mainControl').style = 'display:none';
+	    document.getElementById('waitMessage').style = 'display:block';
+	    redirectAfterDeviceIsUp('index.html');
+	    //setTimeout(function(){window.location='../index.html'}, 40000);
+    }else if(cmd == 'shutdown'){
+	    document.getElementById('mainControl').style = 'display:none';
+	    document.getElementById('shutdownMessage').style = 'display:block';
+    }
+
 }
 
-if(cmd == 'restart_service'){
-	url += "1";
-}else if(cmd == 'reboot'){
-	url += "2";
-}else if(cmd == 'shutdown'){
-	url += "3";
-}
-
-var req = new XMLHttpRequest();
-req.open("GET", url, true);
-req.send(null);
-
-
-if(cmd == 'restart_service'){
-	document.getElementById('mainControl').style = 'display:none';
-	document.getElementById('serviceWaitMessage').style = 'display:block';
-	setTimeout(function(){window.location='../index.html'}, 6000);	
-}else if(cmd == 'reboot'){
-	document.getElementById('mainControl').style = 'display:none';
-	document.getElementById('waitMessage').style = 'display:block';
-	setTimeout(function(){window.location='../index.html'}, 40000);
-}else if(cmd == 'shutdown'){
-	document.getElementById('mainControl').style = 'display:none';
-	document.getElementById('shutdownMessage').style = 'display:block';
-}
-
+function redirectAfterDeviceIsUp(url){
+    
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            //Device is up and working
+            window.location = url;
+       }else if(this.status == 404){
+            //Device is not up yet, retry after 10secs
+            setTimeout(function(){redirectAfterDeviceIsUp(url)}, 10000);
+       }
+    };
+    xhttp.open("GET", "index.html", true);
+    xhttp.send();
 }
 </script>
 </head>
@@ -87,20 +74,20 @@ if(cmd == 'restart_service'){
 <body>
 <div id="bodyContainer">
 	<div id="mainControl">
-		<a href="../index.html"><button type="button"><< Back</button></a>
-		<button type="button" onclick="sendCommand('restart_service')">Restart Service</button>
-		<button type="button" onclick="sendCommand('reboot')">Reboot</button>
-		<button type="button" onclick="sendCommand('shutdown')">Shutdown</button>
+		<a href="index.html"><button type="button" class="btn btn-std"><< Back</button></a><br/>
+		<button type="button" class="btn btn-cmd" onclick="sendCommand('restart_service')">Restart Service</button><br/>
+		<button type="button" class="btn btn-danger" onclick="sendCommand('reboot')">Reboot</button><br/>
+		<button type="button" class="btn btn-danger" onclick="sendCommand('shutdown')">Shutdown</button><br/>
 	</div>
 	<div id="serviceWaitMessage" style="display:none">
                 <h2>Please Wait!!!</h2>
-        </div>
+    </div>
 	<div id="waitMessage" style="display:none">
 		<h2>Device is restarting. Please Wait!!!</h2>
 	</div>
 	<div id="shutdownMessage" style="display:none">
-                <h2>Device is shutting down!!!</h2>
-        </div>
+        <h2>Device is shutting down!!!</h2>
+    </div>
 
 </div>
 </body>

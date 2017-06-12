@@ -1,0 +1,78 @@
+body{
+	padding: 0;
+	margin: 0;
+	background-color: #b3ecff;
+}
+#bodyContainer{
+	width: 380px;
+	margin: 0 auto;
+	padding-top: 5px;
+	/*border: 1px solid #000;*/
+}
+
+#streamContainer img{
+	/*padding: 2px;*/
+	display: block;
+	margin: 0 auto;
+	border: 3px solid #006080;
+}
+
+#streamContainer{
+	width: 100%;
+	margin: 0 auto;
+	/*border: 1px solid #000;*/
+}
+
+#mainControl{
+	width: 80%;
+	margin:0 auto;
+}
+
+#eventStream{
+	padding: 2px;
+	border-bottom: 1px solid #000;
+	border-top: 1px solid #000;
+}
+
+#eventStream li {
+    list-style-type:decimal;
+}
+
+#eventStream h3{
+	color: #006080;
+	padding: 0;
+	margin: 0;
+}
+
+#streamControl{
+	width: 100%;
+	/*margin:0 auto;*/
+	/*border: 1px solid #000;*/
+}
+.btn{
+    margin: 5px;
+    padding: 5px;
+}
+
+.btn-std{
+    background: #0080ff;
+    color: #fff;
+}
+
+.btn-cmd{
+    background: #ff6600;
+    color: #fff;
+}
+
+.btn-danger{
+    background: #ff0000;
+    color: #fff;
+}
+
+@media screen and (max-width:320px) {
+  /* CSS for screens that are 320 pixels or less will be put in this section */
+}
+
+@media screen and (min-width:320px) and (max-width:640px) {
+  /* for screens that are at least 320 pixels wide but less than or equal to 640 pixels wide */
+}
