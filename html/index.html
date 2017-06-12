@@ -7,17 +7,20 @@
 <title>Secure Monitor</title>
 <link href="styles.css" rel="stylesheet"/>
 <script type="text/javascript">
+var latestEvent = null;
+
 	window.onload = function(){
 		var url = window.location.href;
 		var host = url.substring(0, url.lastIndexOf("/"));
 		var img = document.getElementById("outStream");
 		img.src = host+":9090/stream/video.mjpeg";
-		
+		//startVibrate(1000);
 		updateMotionStatus();
 		//setTimeout(function(){soundAlarm()}, 5000);
-		setInterval(function(){updateMotionStatus();updateTemperature()}, 5000);
+		setInterval(function(){updateMotionStatus();updateTemperature();}, 5000);
 	}
 function updateMotionStatus(){
+    //2015-03-25T12:00:00Z
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -28,6 +31,14 @@ function updateMotionStatus(){
             	var entry = document.createElement("li");
             	entry.appendChild(document.createTextNode(mList[i].replace('_', ' ')));
             	list.insertBefore(entry, list.firstChild);
+	        }
+	        
+	        var eve = new Date(mList[mList.length - 1].replace('_', 'T'));
+	        
+	        if(latestEvent == null || latestEvent < eve){
+	            alert('Latest Event');
+	        
+	            latestEvent = eve;
 	        }
        }
     };
@@ -48,21 +59,16 @@ function updateTemperature(){
     xhttp.send();
 }
 
-function captureFrame(){
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-        }
-    };
-    xhttp.open("GET", "cgi-bin/capture.sh", true);
-    xhttp.send();
-}
-
 function refreshStream(){
 	var img = document.getElementById("outStream");
 	var url = img.src;
 	img.src = '';
 	img.src = url;
+}
+
+function startVibrate(level) {
+    if(navigator.vibrate)
+        navigator.vibrate(level);
 }
 
 function soundAlarm(){
@@ -80,7 +86,7 @@ function soundAlarm(){
 	<div id="streamControl">
 		<button type="button" class="btn btn-std" onclick="refreshStream()" id="streamRefresh">Refresh Video</button>
 		<button type="button" class="btn btn-std" onclick="window.location.reload()">Refresh Page</button>	
-		<button type="button" class="btn btn-std" onclick="captureFrame()" id="streamRefresh">Capture Frame</button><br/>
+		<button type="button" class="btn btn-std" onclick="refreshStream()" id="streamRefresh">Capture Frame</button><br/>
 		<a href="control.html"><button type="button" class="btn btn-cmd">Device Control</button></a>
 	</div>
 	<div id="temperatureBox">
